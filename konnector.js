@@ -26,11 +26,18 @@ module.exports = baseKonnector.createNew({
   models: [Bill],
 
   fetchOperations: [
-    login,
-    paiements,
-    reimbursements
+//    login,
+//    paiements,
+//    reimbursements
+    test,
+    customSaveDataAndFile
   ]
 })
+
+const fileOptions = {
+  vendor: 'Harmonie',
+  dateFormat: 'YYYYMMDD'
+}
 
 const baseUrl = 'https://www.harmonie-mutuelle.fr/'
 const userAgent = 'Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:37.0) ' +
@@ -140,10 +147,47 @@ function reimbursements(requiredFields, entries, data, next){
   Promise.all(promises)
   .then(documents => {
     console.log(documents)
+    //'{"decompteList":[{"montantRO":"0,00&nbsp;\\u20ac","prenom":"MELODY","honoraires":"70,00&nbsp;\\u20ac","montantRC":"70,00&nbsp;\\u20ac","labelActe":"Prothèses provisoires non remboursables","nom":"RICHARD","dateSoin":"09/03/2017"}],"countRow":"0","numeroPaiement":"133783390"}'
     next()
   })
   .catch(err => {
     logger.error(err)
     return next(err)
   })
+}
+
+function test(requiredFields, entries, data, next){
+  let documents = [ '{"decompteList":[{"montantRO":"0,00&nbsp;\\u20ac","prenom":"MELODY","honoraires":"70,00&nbsp;\\u20ac","montantRC":"70,00&nbsp;\\u20ac","labelActe":"Prothèses provisoires non remboursables","nom":"RICHARD","dateSoin":"09/03/2017"}],"countRow":"0","numeroPaiement":"133783390"}',
+  '{"decompteList":[{"montantRO":"14,90&nbsp;\\u20ac","prenom":"MELODY","honoraires":"21,28&nbsp;\\u20ac","montantRC":"6,38&nbsp;\\u20ac","labelActe":"Radiologie dentaire","nom":"RICHARD","dateSoin":"09/02/2017"},{"montantRO":"33,74&nbsp;\\u20ac","prenom":"MELODY","honoraires":"48,20&nbsp;\\u20ac","montantRC":"14,46&nbsp;\\u20ac","labelActe":"Soins conservateurs","nom":"RICHARD","dateSoin":"09/02/2017"},{"montantRO":"8,38&nbsp;\\u20ac","prenom":"MELODY","honoraires":"11,97&nbsp;\\u20ac","montantRC":"3,59&nbsp;\\u20ac","labelActe":"Radiologie dentaire","nom":"RICHARD","dateSoin":"09/02/2017"},{"montantRO":"55,67&nbsp;\\u20ac","prenom":"MELODY","honoraires":"79,53&nbsp;\\u20ac","montantRC":"23,86&nbsp;\\u20ac","labelActe":"Soins conservateurs","nom":"RICHARD","dateSoin":"09/02/2017"}],"countRow":"1","numeroPaiement":"133015357"}',
+  '{"decompteList":[{"montantRO":"16,10&nbsp;\\u20ac","prenom":"MARC","honoraires":"60,00&nbsp;\\u20ac","montantRC":"6,90&nbsp;\\u20ac","labelActe":"Consultation spécialiste","nom":"RICHARD","dateSoin":"13/01/2017"},{"montantRO":"0,00&nbsp;\\u20ac","prenom":"MARC","honoraires":"60,00&nbsp;\\u20ac","montantRC":"23,00&nbsp;\\u20ac","labelActe":"Consultation spécialiste","nom":"RICHARD","dateSoin":"13/01/2017"}],"countRow":"2","numeroPaiement":"128088045"}' ]
+  
+  entries.fetched = [];
+  
+  documents.forEach(document => {
+    let doc = JSON.parse(document);
+    
+    doc.decompteList.forEach(reimbursement => {
+      let bill = {
+        type: 'health',
+        subtype: reimbursement.labelActe,
+        vendor: 'Harmonie',
+        amount: parseFloat(reimbursement.montantRC),
+        date: new Date(reimbursement.dateSoin.split('/').reverse().join('/'))
+      }
+      
+      entries.fetched.push(bill)
+      
+      // champs inutilisés:
+      // honoraires : montant dépensé
+      // montantRO : remboursement sécu
+      // nom et prénom
+      // numeroPaiement (sur objet parent)
+    })
+  })
+  
+  next()
+}
+
+function customSaveDataAndFile(requiredFields, entries, data, next) {
+  saveDataAndFile(logger, Bill, fileOptions, ['facture'])(requiredFields, entries, data, next)
 }
