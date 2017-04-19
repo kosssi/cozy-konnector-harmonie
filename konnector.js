@@ -27,6 +27,7 @@ module.exports = baseKonnector.createNew({
 
   fetchOperations: [
     login,
+    releves,
     paiements,
     reimbursements,
     customFilterExisting,
@@ -86,6 +87,40 @@ function login (requiredFields, entries, data, next) {
       logger.error(err)
       next(err);
     }
+  })
+  .catch(err => {
+    logger.error(err)
+    return next(err)
+  })
+}
+
+function releves(requiredFields, entries, data, next){
+  let url = 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-releves';
+  
+  let options = Object.assign(defaultOptions, {
+    url: url,
+    resolveWithFullResponse: false
+  })
+  
+  request(options)
+  .then(body => {
+    let $ = cheerio.load(body)
+    let releveList = new Map()
+    
+    $('#decompte_table tbody tr').each((index, tr) => {
+      let $tr = $(tr);
+      
+      let link = $tr.find('a').attr('href');
+      let date = $tr.find('td').first().text();
+      date = new Date(date.split('/').reverse().join('/'))
+      
+      
+      releveList.set(date, link)
+    });
+    
+    data.releves = releveList
+
+    return next();
   })
   .catch(err => {
     logger.error(err)
@@ -164,6 +199,14 @@ function reimbursements(requiredFields, entries, data, next){
           vendor: 'Harmonie',
           amount: parseFloat(reimbursement.montantRC),
           date: new Date(reimbursement.dateSoin.split('/').reverse().join('/'))
+        }
+        
+        //find the corresponding pdf file
+        //relves is ordered in reverse chronological order
+        for (let [dateReleve, url] of data.releves){
+          if (dateReleve > bill.date){
+            bill.pdfurl = url;
+          }
         }
 
         entries.fetched.push(bill)
