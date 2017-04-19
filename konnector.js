@@ -50,21 +50,18 @@ const defaultOptions = {
     Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
   },
   jar: true,
-  simple: false,
 }
 
 function login (requiredFields, entries, data, next) {
-  let options = defaultOptions
-  
   request(defaultOptions)
   .then(body => {
     let $ = cheerio.load(body);
-    let actionUrl = $("#_58_fm").prop('action');
+    let actionUrl = $('#_58_fm').prop('action');
     
-    $("#_58_login").val(requiredFields.login);
-    $("#_58_password").val(requiredFields.password);
+    $('#_58_login').val(requiredFields.login);
+    $('#_58_password').val(requiredFields.password);
     
-    let formDataArray = $("#_58_fm").serializeArray();
+    let formDataArray = $('#_58_fm').serializeArray();
     let formData = {};
     
     formDataArray.forEach(pair => {
@@ -75,12 +72,20 @@ function login (requiredFields, entries, data, next) {
       method: 'POST',
       url: actionUrl,
       formData: formData,
+      simple: false,
+      resolveWithFullResponse: true
     })
     
     return request(options)
   })
-  .then((response, body) => {
-    next();
+  .then((response) => {
+    //this is  abit strange: if the status code is 302, it means the login was successful. If it's 200, it actually means there was an error. This may change in the future if the form's action is changed.
+    if (response.statusCode === 302) next();
+    else {
+      let err = new Error('Login failed');
+      logger.error(err)
+      next(err);
+    }
   })
   .catch(err => {
     logger.error(err)
@@ -92,7 +97,8 @@ function paiements(requiredFields, entries, data, next){
   let url = 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-remboursements';
   
   let options = Object.assign(defaultOptions, {
-    url: url
+    url: url,
+    resolveWithFullResponse: false
   })
   
   request(options)
@@ -147,9 +153,9 @@ function reimbursements(requiredFields, entries, data, next){
   Promise.all(promises)
   .then(documents => {
     entries.fetched = [];
-  
+    
     documents.forEach(document => {
-      let doc = JSON.parse(document);
+      let doc = JSON.parse(document)
 
       doc.decompteList.forEach(reimbursement => {
         let bill = {
