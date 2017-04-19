@@ -1,4 +1,4 @@
-[Cozy][cozy] <YOUR SUPER NEW KONNECTOR NAME>
+[Cozy][cozy] Harmonie
 =======================================
 
 What's Cozy?
@@ -12,7 +12,7 @@ What's Cozy?
 What's this new konnector?
 --------------------------
 
-<YOUR DESCRIPTION HERE>
+This konnector fetches the list of reimbursements from [Harmonie Mutuelle][harmonie].
 
 ### Open a Pull-Request
 
@@ -66,7 +66,7 @@ The bills (or any file) will be saved in the ./data directory.
 
 ### Maintainer
 
-The lead maintainers for this konnector is <YOUR NAME>
+The lead maintainers for this konnector is @y-lohse
 
 
 ### Get in touch
@@ -82,7 +82,7 @@ You can reach the Cozy Community by:
 License
 -------
 
-<YOUR KONNECTOR NAME> is developed by <your name> and distributed under the [AGPL v3 license][agpl-3.0].
+Harmonie Konnector is developed by Cozy Cloud and distributed under the [AGPL v3 license][agpl-3.0].
 
 [cozy]: https://cozy.io "Cozy Cloud"
 [agpl-3.0]: https://www.gnu.org/licenses/agpl-3.0.html
@@ -91,3 +91,4 @@ License
 [github]: https://github.com/cozy/
 [nodejs]: https://nodejs.org/
 [twitter]: https://twitter.com/mycozycloud
+[harmonie]: https://www.harmonie-mutuelle.fr

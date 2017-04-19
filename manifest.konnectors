@@ -1,10 +1,10 @@
 {
   "version": "1.0.0",
-  "name": "konnector name",
+  "name": "Harmonie",
   "type": "node",
-  "slug": "konnectorslug",
+  "slug": "harmonie",
   "description": "description",
-  "source": "git://github.com/cozy/cozy-konnector-thename.git",
+  "source": "git://github.com/cozy/cozy-konnector-harmonie.git",
   "locales": {
     "fr": {
       "description": "Récupère toutes vos factures",
@@ -29,7 +29,7 @@
     }
   },
   "developer": {
-    "name": "yourname",
-    "url": "your web site"
+    "name": "Cozy Cloud",
+    "url": "https://cozy.io"
   }
 }

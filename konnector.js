@@ -17,8 +17,8 @@ module.exports = baseKonnector.createNew({
 
   category: 'health',
   color: {
-    hex: '#48D5B5',
-    css: '#48D5B5'
+    hex: '#D1432B',
+    css: 'linear-gradient(to bottom, rgba(255,214,31,1) 0%, rgba(209,68,43,1) 100%)'
   },
 
   dataType: ['bill'],
