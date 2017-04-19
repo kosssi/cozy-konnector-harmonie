@@ -28,7 +28,7 @@ module.exports = baseKonnector.createNew({
   fetchOperations: [
     login,
     paiements,
-    reimbursements
+    reimbursements,
     customFilterExisting,
     customSaveDataAndFile
   ]
@@ -182,6 +182,6 @@ function customFilterExisting (requiredFields, entries, data, next) {
   filterExisting(logger, Bill)(requiredFields, entries, data, next)
 }
 
-function customSaveDataAndFile(requiredFields, entries, data, next) {
+function customSaveDataAndFile (requiredFields, entries, data, next) {
   saveDataAndFile(logger, Bill, fileOptions, ['facture'])(requiredFields, entries, data, next)
 }
