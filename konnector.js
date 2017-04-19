@@ -30,6 +30,7 @@ module.exports = baseKonnector.createNew({
 //    paiements,
 //    reimbursements
     test,
+    customFilterExisting,
     customSaveDataAndFile
   ]
 })
@@ -186,6 +187,10 @@ function test(requiredFields, entries, data, next){
   })
   
   next()
+}
+
+function customFilterExisting (requiredFields, entries, data, next) {
+  filterExisting(logger, Bill)(requiredFields, entries, data, next)
 }
 
 function customSaveDataAndFile(requiredFields, entries, data, next) {
