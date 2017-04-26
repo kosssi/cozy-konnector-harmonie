@@ -26,6 +26,10 @@
     "files": {
       "description": "Required to save the bills",
       "type": "io.cozy.files"
+    },
+    "bankoperations": {
+      "description": "Required to link the bills with their bank operation",
+      "type": "io.cozy.bank_operations"
     }
   },
   "developer": {

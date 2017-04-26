@@ -1,6 +1,6 @@
 'use strict'
 
-const {baseKonnector, filterExisting, saveDataAndFile, models} = require('cozy-konnector-libs')
+const {baseKonnector, filterExisting, saveDataAndFile, models, linkBankOperation} = require('cozy-konnector-libs')
 const request = require('request-promise-native')
 const cheerio = require('cheerio')
 
@@ -31,7 +31,8 @@ module.exports = baseKonnector.createNew({
     paiements,
     reimbursements,
     customFilterExisting,
-    customSaveDataAndFile
+    customSaveDataAndFile,
+    customLinkOperations,
   ]
 })
 
@@ -198,7 +199,8 @@ function reimbursements(requiredFields, entries, data, next){
           subtype: reimbursement.labelActe,
           vendor: 'Harmonie',
           amount: parseFloat(reimbursement.montantRC),
-          date: new Date(reimbursement.dateSoin.split('/').reverse().join('/'))
+          date: new Date(reimbursement.dateSoin.split('/').reverse().join('/')),
+          isRefund: true
         }
         
         //find the corresponding pdf file
@@ -233,4 +235,16 @@ function customFilterExisting (requiredFields, entries, data, next) {
 
 function customSaveDataAndFile (requiredFields, entries, data, next) {
   saveDataAndFile(logger, Bill, fileOptions, ['facture'])(requiredFields, entries, data, next)
+}
+
+function customLinkOperations (requiredFields, entries, data, next) {
+  linkBankOperation({
+      log: logger,
+      model: Bill,
+      identifier: 'Harmonie',
+      minDateDelta: 0.1,
+      maxDateDelta: 40,
+      amountDelta: 0.1,
+      allowUnsafeLinks: true
+    })(requiredFields, entries, data, next)
 }
