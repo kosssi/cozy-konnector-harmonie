@@ -1,3 +1,4 @@
 node_modules/*
-data/env.js
+data/env_fields.json
 data/token.json
+data/account.txt

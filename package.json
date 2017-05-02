@@ -16,9 +16,11 @@
   },
   "scripts": {
     "start": "node index.js",
-    "predev": "env-cmd ./data/env.js cozy-authenticate manifest.konnectors",
-    "dev": "env-cmd ./data/env.js npm start",
-    "standalone": "env-cmd ./data/env_standalone.js npm start"
+    "init:dev:account": "npm run predev && env-cmd ./data/env_development.js cozy-init-dev-account ./data/account.txt ./data/env_fields.json",
+    "predev": "env-cmd ./data/env_development.js cozy-authenticate manifest.konnector",
+    "dev": "env-cmd ./data/env_development.js npm start",
+    "standalone": "env-cmd ./data/env_standalone.js npm start",
+    "build": "webpack"
   },
   "devDependencies": {
     "env-cmd": "^5.0.0",
