@@ -195,7 +195,7 @@ function reimbursements(requiredFields, entries, data, next){
 
       doc.decompteList.forEach(reimbursement => {
         let bill = {
-          type: 'health',
+          type: 'health_costs',
           subtype: reimbursement.labelActe,
           vendor: 'Harmonie',
           amount: parseFloat(reimbursement.montantRC),
