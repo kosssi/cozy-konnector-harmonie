@@ -1,5 +1,5 @@
 {
-  "name": "cozy-konnector-newkonnectorname",
+  "name": "cozy-konnector-harmonie",
   "version": "1.0.0",
   "description": "",
   "keywords": [],
@@ -20,10 +20,13 @@
     "predev": "env-cmd ./data/env_development.js cozy-authenticate manifest.konnector",
     "dev": "env-cmd ./data/env_development.js npm start",
     "standalone": "env-cmd ./data/env_standalone.js npm start",
-    "build": "webpack"
+    "build": "webpack",
+    "deploy": "git-directory-deploy --username Cozy --email contact@cozycloud.cc --directory build/ --repo=https://$GITHUB_TOKEN@github.com/cozy/cozy-harmonie.git"
   },
   "devDependencies": {
+    "copy-webpack-plugin": "^4.0.1",
     "env-cmd": "^5.0.0",
+    "git-directory-deploy": "^1.5.1",
     "request-debug": "^0.2.0"
   }
 }
