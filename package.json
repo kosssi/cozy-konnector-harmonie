@@ -27,6 +27,7 @@
     "copy-webpack-plugin": "^4.0.1",
     "env-cmd": "^5.0.0",
     "git-directory-deploy": "^1.5.1",
-    "request-debug": "^0.2.0"
+    "request-debug": "^0.2.0",
+    "webpack": "^2.6.1"
   }
 }
