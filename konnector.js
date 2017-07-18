@@ -32,7 +32,7 @@ module.exports = baseKonnector.createNew({
     reimbursements,
     customFilterExisting,
     customSaveDataAndFile,
-    customLinkOperations,
+    customLinkOperations
   ]
 })
 
@@ -51,25 +51,25 @@ const defaultOptions = {
     'User-Agent': userAgent,
     Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
   },
-  jar: true,
+  jar: true
 }
 
 function login (requiredFields, entries, data, next) {
   request(defaultOptions)
   .then(body => {
-    let $ = cheerio.load(body);
-    let actionUrl = $('#_58_fm').prop('action');
-    
-    $('#_58_login').val(requiredFields.login);
-    $('#_58_password').val(requiredFields.password);
-    
-    let formDataArray = $('#_58_fm').serializeArray();
-    let formData = {};
-    
+    let $ = cheerio.load(body)
+    let actionUrl = $('#_58_fm').prop('action')
+
+    $('#_58_login').val(requiredFields.login)
+    $('#_58_password').val(requiredFields.password)
+
+    let formDataArray = $('#_58_fm').serializeArray()
+    let formData = {}
+
     formDataArray.forEach(pair => {
-      formData[pair.name] = pair.value;
-    });
-    
+      formData[pair.name] = pair.value
+    })
+
     let options = Object.assign(defaultOptions, {
       method: 'POST',
       url: actionUrl,
@@ -77,16 +77,16 @@ function login (requiredFields, entries, data, next) {
       simple: false,
       resolveWithFullResponse: true
     })
-    
+
     return request(options)
   })
   .then((response) => {
-    //this is  abit strange: if the status code is 302, it means the login was successful. If it's 200, it actually means there was an error. This may change in the future if the form's action is changed.
-    if (response.statusCode === 302) next();
+    // this is  abit strange: if the status code is 302, it means the login was successful. If it's 200, it actually means there was an error. This may change in the future if the form's action is changed.
+    if (response.statusCode === 302) next()
     else {
-      let err = new Error('Login failed');
+      let err = new Error('Login failed')
       logger.error(err)
-      next(err);
+      next(err)
     }
   })
   .catch(err => {
@@ -95,33 +95,32 @@ function login (requiredFields, entries, data, next) {
   })
 }
 
-function releves(requiredFields, entries, data, next){
-  let url = 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-releves';
-  
+function releves (requiredFields, entries, data, next) {
+  let url = 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-releves'
+
   let options = Object.assign(defaultOptions, {
     url: url,
     resolveWithFullResponse: false
   })
-  
+
   request(options)
   .then(body => {
     let $ = cheerio.load(body)
     let releveList = new Map()
-    
+
     $('#decompte_table tbody tr').each((index, tr) => {
-      let $tr = $(tr);
-      
-      let link = $tr.find('a').attr('href');
-      let date = $tr.find('td').first().text();
+      let $tr = $(tr)
+
+      let link = $tr.find('a').attr('href')
+      let date = $tr.find('td').first().text()
       date = new Date(date.split('/').reverse().join('/'))
-      
-      
+
       releveList.set(date, link)
-    });
-    
+    })
+
     data.releves = releveList
 
-    return next();
+    return next()
   })
   .catch(err => {
     logger.error(err)
@@ -129,29 +128,29 @@ function releves(requiredFields, entries, data, next){
   })
 }
 
-function paiements(requiredFields, entries, data, next){
-  let url = 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-remboursements';
-  
+function paiements (requiredFields, entries, data, next) {
+  let url = 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-remboursements'
+
   let options = Object.assign(defaultOptions, {
     url: url,
     resolveWithFullResponse: false
   })
-  
+
   request(options)
   .then(body => {
     let $ = cheerio.load(body)
     let paimentList = {}
-    
+
     $('img.loupe').each((index, elem) => {
       let onclick = elem.attribs.onclick
-      if (!onclick) return;
+      if (!onclick) return
       let chunks = onclick.split("'")
       paimentList[chunks[1]] = chunks[3]
     })
-    
+
     data.paiments = paimentList
 
-    return next();
+    return next()
   })
   .catch(err => {
     logger.error(err)
@@ -159,11 +158,11 @@ function paiements(requiredFields, entries, data, next){
   })
 }
 
-function reimbursements(requiredFields, entries, data, next){
-  let url = 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-remboursements';
+function reimbursements (requiredFields, entries, data, next) {
+  let url = 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-remboursements'
   let promises = []
-  
-  for (let paiementCounter in data.paiments){
+
+  for (let paiementCounter in data.paiments) {
     let qs = {
       p_p_id: 'mhmRemboursement_WAR_mhmportalapplication',
       p_p_lifecycle: 2,
@@ -175,7 +174,7 @@ function reimbursements(requiredFields, entries, data, next){
       p_p_col_count: 3,
       _mhmRemboursement_WAR_mhmportalapplication_action: 'detailPaiement',
       counter: paiementCounter,
-      numPaiement: data.paiments[paiementCounter],
+      numPaiement: data.paiments[paiementCounter]
     }
 
     let options = Object.assign(defaultOptions, {
@@ -185,11 +184,11 @@ function reimbursements(requiredFields, entries, data, next){
 
     promises.push(request(options))
   }
-  
+
   Promise.all(promises)
   .then(documents => {
-    entries.fetched = [];
-    
+    entries.fetched = []
+
     documents.forEach(document => {
       let doc = JSON.parse(document)
 
@@ -202,12 +201,12 @@ function reimbursements(requiredFields, entries, data, next){
           date: new Date(reimbursement.dateSoin.split('/').reverse().join('/')),
           isRefund: true
         }
-        
-        //find the corresponding pdf file
-        //relves is ordered in reverse chronological order
-        for (let [dateReleve, url] of data.releves){
-          if (dateReleve > bill.date){
-            bill.pdfurl = url;
+
+        // find the corresponding pdf file
+        // relves is ordered in reverse chronological order
+        for (let [dateReleve, url] of data.releves) {
+          if (dateReleve > bill.date) {
+            bill.pdfurl = url
           }
         }
 
@@ -220,7 +219,7 @@ function reimbursements(requiredFields, entries, data, next){
         // numeroPaiement (sur objet parent)
       })
     })
-    
+
     next()
   })
   .catch(err => {
@@ -239,12 +238,12 @@ function customSaveDataAndFile (requiredFields, entries, data, next) {
 
 function customLinkOperations (requiredFields, entries, data, next) {
   linkBankOperation({
-      log: logger,
-      model: Bill,
-      identifier: 'Harmonie',
-      minDateDelta: 0.1,
-      maxDateDelta: 40,
-      amountDelta: 0.1,
-      allowUnsafeLinks: true
-    })(requiredFields, entries, data, next)
+    log: logger,
+    model: Bill,
+    identifier: 'Harmonie',
+    minDateDelta: 0.1,
+    maxDateDelta: 40,
+    amountDelta: 0.1,
+    allowUnsafeLinks: true
+  })(requiredFields, entries, data, next)
 }
