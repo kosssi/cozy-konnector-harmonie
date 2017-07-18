@@ -36,9 +36,15 @@ module.exports = baseKonnector.createNew({
   ]
 })
 
+const j = request.jar()
+
 const fileOptions = {
   vendor: 'Harmonie',
-  dateFormat: 'YYYYMMDD'
+  dateFormat: 'YYYYMMDD',
+  requestoptions: {
+    jar: j
+  }
+
 }
 
 const baseUrl = 'https://www.harmonie-mutuelle.fr/'
@@ -51,7 +57,7 @@ const defaultOptions = {
     'User-Agent': userAgent,
     Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
   },
-  jar: true
+  jar: j
 }
 
 function login (requiredFields, entries, data, next) {
@@ -81,17 +87,14 @@ function login (requiredFields, entries, data, next) {
     return request(options)
   })
   .then((response) => {
-    // this is  abit strange: if the status code is 302, it means the login was successful. If it's 200, it actually means there was an error. This may change in the future if the form's action is changed.
+    // this is a bit strange: if the status code is 302, it means the login was successful. If it's 200, it actually means there was an error. This may change in the future if the form's action is changed.
     if (response.statusCode === 302) next()
     else {
-      let err = new Error('Login failed')
-      logger.error(err)
-      next(err)
+      next(new Error('LOGIN_FAILED'))
     }
   })
   .catch(err => {
-    logger.error(err)
-    return next(err)
+    return next(err.message)
   })
 }
 
@@ -123,8 +126,7 @@ function releves (requiredFields, entries, data, next) {
     return next()
   })
   .catch(err => {
-    logger.error(err)
-    return next(err)
+    return next(err.message)
   })
 }
 
@@ -153,8 +155,7 @@ function paiements (requiredFields, entries, data, next) {
     return next()
   })
   .catch(err => {
-    logger.error(err)
-    return next(err)
+    return next(err.message)
   })
 }
 
@@ -223,17 +224,16 @@ function reimbursements (requiredFields, entries, data, next) {
     next()
   })
   .catch(err => {
-    logger.error(err)
-    return next(err)
+    return next(err.message)
   })
 }
 
 function customFilterExisting (requiredFields, entries, data, next) {
-  filterExisting(logger, Bill)(requiredFields, entries, data, next)
+  filterExisting(null, Bill)(requiredFields, entries, data, next)
 }
 
 function customSaveDataAndFile (requiredFields, entries, data, next) {
-  saveDataAndFile(logger, Bill, fileOptions, ['facture'])(requiredFields, entries, data, next)
+  saveDataAndFile(null, Bill, fileOptions, ['facture'])(requiredFields, entries, data, next)
 }
 
 function customLinkOperations (requiredFields, entries, data, next) {

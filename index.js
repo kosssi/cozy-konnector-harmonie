@@ -1,11 +1,12 @@
 const konnector = require('./konnector')
+const { log } = require('cozy-konnector-libs')
 
 const cozyFields = JSON.parse(process.env.COZY_FIELDS)
 
 konnector.fetch({account: cozyFields.account, folderPath: cozyFields.folder_to_save}, err => {
-  console.log('The konnector has been run')
+  log('info', 'The konnector has been run')
   if (err) {
-    console.error(err, 'There was an error')
+    log('error', err.message, 'Error caught by index.js')
     process.exit(1)
   }
 })
