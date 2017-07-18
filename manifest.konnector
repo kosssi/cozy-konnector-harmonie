@@ -29,7 +29,7 @@
     },
     "bankoperations": {
       "description": "Required to link the bills with their bank operation",
-      "type": "io.cozy.bank_operations"
+      "type": "io.cozy.bank.operations"
     },
     "accounts": {
       "description": "Required to get the account's data",
