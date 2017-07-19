@@ -74793,7 +74793,10 @@ module.exports = require("zlib");
 
 
 const {baseKonnector, filterExisting, saveDataAndFile, models, linkBankOperation} = __webpack_require__(143)
-const request = __webpack_require__(655)
+let request = __webpack_require__(655)
+const moment = __webpack_require__(0)
+// require('request-debug')(request)
+
 const cheerio = __webpack_require__(404)
 
 const Bill = models.bill
@@ -74832,7 +74835,6 @@ const j = request.jar()
 
 const fileOptions = {
   vendor: 'Harmonie',
-  dateFormat: 'YYYYMMDD',
   requestoptions: {
     jar: j
   }
@@ -74886,7 +74888,7 @@ function login (requiredFields, entries, data, next) {
     }
   })
   .catch(err => {
-    return next(err.message)
+    return next(err)
   })
 }
 
@@ -74918,7 +74920,7 @@ function releves (requiredFields, entries, data, next) {
     return next()
   })
   .catch(err => {
-    return next(err.message)
+    return next(err)
   })
 }
 
@@ -74926,11 +74928,36 @@ function paiements (requiredFields, entries, data, next) {
   let url = 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-remboursements'
 
   let options = Object.assign(defaultOptions, {
-    url: url,
+    url,
     resolveWithFullResponse: false
   })
 
   request(options)
+  .then(body => {
+    let $ = cheerio.load(body)
+    const $form = $('[name=remboursementForm]')
+    const formvalues = $form.serializeArray().reduce((memo, item) => {
+      memo[item.name] = item.value
+      return memo
+    }, {})
+
+    // run a request from one year ago
+    formvalues.dateDebutJour = formvalues.dateFinJour
+    formvalues.dateDebutMois = formvalues.dateFinMois
+    formvalues.dateDebutAnnee = (formvalues.dateFinAnnee - 1) + ''
+
+    let options = {
+      url: $form.attr('action'),
+      method: 'POST',
+      form: formvalues,
+      headers: {
+        'User-Agent': userAgent,
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+      },
+      jar: j
+    }
+    return request(options)
+  })
   .then(body => {
     let $ = cheerio.load(body)
     let paimentList = {}
@@ -74947,7 +74974,7 @@ function paiements (requiredFields, entries, data, next) {
     return next()
   })
   .catch(err => {
-    return next(err.message)
+    return next(err)
   })
 }
 
@@ -74996,10 +75023,12 @@ function reimbursements (requiredFields, entries, data, next) {
         }
 
         // find the corresponding pdf file
-        // relves is ordered in reverse chronological order
+        // releves is ordered in reverse chronological order
         for (let [dateReleve, url] of data.releves) {
           if (dateReleve > bill.date) {
-            bill.pdfurl = url
+            bill.pdfurl = url,
+            // we prefer to use the date of the releve in the file name and not the bill date
+            bill.uniqueId = moment(dateReleve).format('YYYYMMDD')
           }
         }
 
@@ -75016,7 +75045,7 @@ function reimbursements (requiredFields, entries, data, next) {
     next()
   })
   .catch(err => {
-    return next(err.message)
+    return next(err)
   })
 }
 
@@ -75053,7 +75082,8 @@ const cozyFields = JSON.parse(process.env.COZY_FIELDS)
 konnector.fetch({account: cozyFields.account, folderPath: cozyFields.folder_to_save}, err => {
   log('info', 'The konnector has been run')
   if (err) {
-    log('error', err.message, 'Error caught by index.js')
+    // console.log(err, 'err')
+    log('error', err.message || err, 'Error caught by index.js')
     process.exit(1)
   }
 })
