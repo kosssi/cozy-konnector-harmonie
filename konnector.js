@@ -1,7 +1,9 @@
 'use strict'
 
 const {baseKonnector, filterExisting, saveDataAndFile, models, linkBankOperation} = require('cozy-konnector-libs')
-const request = require('request-promise-native')
+let request = require('request-promise-native')
+// require('request-debug')(request)
+
 const cheerio = require('cheerio')
 
 const Bill = models.bill
@@ -94,7 +96,7 @@ function login (requiredFields, entries, data, next) {
     }
   })
   .catch(err => {
-    return next(err.message)
+    return next(err)
   })
 }
 
@@ -126,7 +128,7 @@ function releves (requiredFields, entries, data, next) {
     return next()
   })
   .catch(err => {
-    return next(err.message)
+    return next(err)
   })
 }
 
@@ -134,11 +136,36 @@ function paiements (requiredFields, entries, data, next) {
   let url = 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-remboursements'
 
   let options = Object.assign(defaultOptions, {
-    url: url,
+    url,
     resolveWithFullResponse: false
   })
 
   request(options)
+  .then(body => {
+    let $ = cheerio.load(body)
+    const $form = $('[name=remboursementForm]')
+    const formvalues = $form.serializeArray().reduce((memo, item) => {
+      memo[item.name] = item.value
+      return memo
+    }, {})
+
+    // run a request from one year ago
+    formvalues.dateDebutJour = formvalues.dateFinJour
+    formvalues.dateDebutMois = formvalues.dateFinMois
+    formvalues.dateDebutAnnee = (formvalues.dateFinAnnee - 1) + ''
+
+    let options = {
+      url: $form.attr('action'),
+      method: 'POST',
+      form: formvalues,
+      headers: {
+        'User-Agent': userAgent,
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+      },
+      jar: j
+    }
+    return request(options)
+  })
   .then(body => {
     let $ = cheerio.load(body)
     let paimentList = {}
@@ -155,7 +182,7 @@ function paiements (requiredFields, entries, data, next) {
     return next()
   })
   .catch(err => {
-    return next(err.message)
+    return next(err)
   })
 }
 
@@ -224,7 +251,7 @@ function reimbursements (requiredFields, entries, data, next) {
     next()
   })
   .catch(err => {
-    return next(err.message)
+    return next(err)
   })
 }
 
