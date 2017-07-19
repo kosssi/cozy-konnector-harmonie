@@ -2,6 +2,7 @@
 
 const {baseKonnector, filterExisting, saveDataAndFile, models, linkBankOperation} = require('cozy-konnector-libs')
 let request = require('request-promise-native')
+const moment = require('moment')
 // require('request-debug')(request)
 
 const cheerio = require('cheerio')
@@ -42,7 +43,6 @@ const j = request.jar()
 
 const fileOptions = {
   vendor: 'Harmonie',
-  dateFormat: 'YYYYMMDD',
   requestoptions: {
     jar: j
   }
@@ -231,10 +231,12 @@ function reimbursements (requiredFields, entries, data, next) {
         }
 
         // find the corresponding pdf file
-        // relves is ordered in reverse chronological order
+        // releves is ordered in reverse chronological order
         for (let [dateReleve, url] of data.releves) {
           if (dateReleve > bill.date) {
-            bill.pdfurl = url
+            bill.pdfurl = url,
+            // we prefer to use the date of the releve in the file name and not the bill date
+            bill.uniqueId = moment(dateReleve).format('YYYYMMDD')
           }
         }
 
