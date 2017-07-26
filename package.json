@@ -7,7 +7,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "cheerio": "^0.22.0",
-    "cozy-konnector-libs": "^2.4.5",
+    "cozy-konnector-libs": "^2.5.0",
     "debug": "^2.6.3",
     "node-polyglot": "^2.2.2",
     "printit": "^0.1.20",
@@ -30,6 +30,6 @@
     "env-cmd": "^5.0.0",
     "git-directory-deploy": "^1.5.1",
     "request-debug": "^0.2.0",
-    "webpack": "^2.6.1"
+    "webpack": "^3.4.1"
   }
 }
