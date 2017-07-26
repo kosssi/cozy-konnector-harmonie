@@ -1,41 +1,21 @@
 'use strict'
 
-const {baseKonnector, filterExisting, saveDataAndFile, models, linkBankOperation} = require('cozy-konnector-libs')
+const {baseKonnector, saveBills} = require('cozy-konnector-libs')
 let request = require('request-promise-native')
 const moment = require('moment')
 // require('request-debug')(request)
 
 const cheerio = require('cheerio')
 
-const Bill = models.bill
-
-const logger = require('printit')({
-  prefix: 'Harmonie',
-  date: true
-})
-
 module.exports = baseKonnector.createNew({
   name: 'Harmonie',
-  vendorLink: 'www.harmonie-mutuelle.fr',
-
-  category: 'health',
-  color: {
-    hex: '#D1432B',
-    css: 'linear-gradient(to bottom, rgba(255,214,31,1) 0%, rgba(209,68,43,1) 100%)'
-  },
-
-  dataType: ['bill'],
-
-  models: [Bill],
-
+  models: [],
   fetchOperations: [
     login,
     releves,
     paiements,
     reimbursements,
-    customFilterExisting,
-    customSaveDataAndFile,
-    customLinkOperations
+    customSaveBills
   ]
 })
 
@@ -226,7 +206,7 @@ function reimbursements (requiredFields, entries, data, next) {
           subtype: reimbursement.labelActe,
           vendor: 'Harmonie',
           amount: parseFloat(reimbursement.montantRC),
-          date: new Date(reimbursement.dateSoin.split('/').reverse().join('/')),
+          date: moment(new Date(reimbursement.dateSoin.split('/').reverse().join('/'))),
           isRefund: true
         }
 
@@ -234,7 +214,7 @@ function reimbursements (requiredFields, entries, data, next) {
         // releves is ordered in reverse chronological order
         for (let [dateReleve, url] of data.releves) {
           if (dateReleve > bill.date) {
-            bill.pdfurl = url,
+            bill.pdfurl = url
             // we prefer to use the date of the releve in the file name and not the bill date
             bill.uniqueId = moment(dateReleve).format('YYYYMMDD')
           }
@@ -257,22 +237,17 @@ function reimbursements (requiredFields, entries, data, next) {
   })
 }
 
-function customFilterExisting (requiredFields, entries, data, next) {
-  filterExisting(null, Bill)(requiredFields, entries, data, next)
-}
-
-function customSaveDataAndFile (requiredFields, entries, data, next) {
-  saveDataAndFile(null, Bill, fileOptions, ['facture'])(requiredFields, entries, data, next)
-}
-
-function customLinkOperations (requiredFields, entries, data, next) {
-  linkBankOperation({
-    log: logger,
-    model: Bill,
-    identifier: 'Harmonie',
+function customSaveBills (requiredFields, entries, data, next) {
+  const bankOptions = {
+    identifiers: 'Harmonie',
     minDateDelta: 0.1,
     maxDateDelta: 40,
-    amountDelta: 0.1,
-    allowUnsafeLinks: true
-  })(requiredFields, entries, data, next)
+    amountDelta: 0.1
+  }
+
+  const filterOptions = {
+    keys: ['date', 'amount']
+  }
+
+  saveBills(filterOptions, fileOptions, bankOptions)(requiredFields, entries, data, next)
 }
