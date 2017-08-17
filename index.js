@@ -237,7 +237,7 @@ function reimbursements(requiredFields) {
           if (dateReleve > bill.date) {
             bill.fileurl = url
             // we prefer to use the date of the releve in the file name and not the bill date
-            bill.uniqueId = moment(dateReleve).format('[Facture] DD/MM/YYYY')
+            bill.uniqueId = moment(dateReleve).format('[Facture] YYYY[/]MM[/]DD MMM YYYY')
             bill.filename = `${bill.uniqueId}.pdf`
             bill.requestOptions = {
               jar: j
