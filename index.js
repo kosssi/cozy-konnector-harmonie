@@ -1,13 +1,13 @@
-const {BaseKonnector, saveBills} = require('cozy-konnector-libs')
+const { BaseKonnector, saveBills } = require('cozy-konnector-libs')
 let request = require('request-promise-native')
 const moment = require('moment')
 const cheerio = require('cheerio')
 
-const reducePromises = function (promises, that /* , args... */) {
+const reducePromises = function(promises, that /* , args... */) {
   return promises.reduce((agg, promiseMaker) => {
     promiseMaker = promiseMaker.bind(that)
     const args = Array.from(arguments).slice(2)
-    args.forEach(function (arg) {
+    args.forEach(function(arg) {
       promiseMaker = promiseMaker.bind(null, arg)
     })
     return agg ? agg.then(promiseMaker) : promiseMaker()
@@ -15,7 +15,7 @@ const reducePromises = function (promises, that /* , args... */) {
 }
 
 class Konnector extends BaseKonnector {
-  constructor (fetch, options) {
+  constructor(fetch, options) {
     super(fetch, options)
     this.items = []
     this.files = []
@@ -23,19 +23,19 @@ class Konnector extends BaseKonnector {
     this.exporters = []
   }
 
-  yield (file) {
+  yield(file) {
     this.files.push(file)
   }
 
-  runFetchers () {
+  runFetchers() {
     return reducePromises(this.fetchers, this, this.fields)
   }
 
-  runExporters () {
+  runExporters() {
     return reducePromises(this.exporters, this, this.fields)
   }
 
-  run () {
+  run() {
     return this.runFetchers().then(() => this.runExporters()).catch(err => {
       console.log(err.stack)
     })
@@ -56,12 +56,12 @@ const fileOptions = {
   requestOptions: {
     jar: j
   }
-
 }
 
 const baseUrl = 'https://www.harmonie-mutuelle.fr/'
-const userAgent = 'Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:37.0) ' +
-                  'Gecko/20100101 Firefox/37.0'
+const userAgent =
+  'Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:37.0) ' +
+  'Gecko/20100101 Firefox/37.0'
 const defaultOptions = {
   method: 'GET',
   uri: `${baseUrl}`,
@@ -72,41 +72,41 @@ const defaultOptions = {
   jar: j
 }
 
-function login (requiredFields) {
+function login(requiredFields) {
   return request(defaultOptions)
-  .then(body => {
-    let $ = cheerio.load(body)
-    let actionUrl = $('#_58_fm').prop('action')
+    .then(body => {
+      let $ = cheerio.load(body)
+      let actionUrl = $('#_58_fm').prop('action')
 
-    $('#_58_login').val(requiredFields.login)
-    $('#_58_password').val(requiredFields.password)
+      $('#_58_login').val(requiredFields.login)
+      $('#_58_password').val(requiredFields.password)
 
-    let formDataArray = $('#_58_fm').serializeArray()
-    let formData = {}
+      let formDataArray = $('#_58_fm').serializeArray()
+      let formData = {}
 
-    formDataArray.forEach(pair => {
-      formData[pair.name] = pair.value
+      formDataArray.forEach(pair => {
+        formData[pair.name] = pair.value
+      })
+
+      let options = Object.assign(defaultOptions, {
+        method: 'POST',
+        uri: actionUrl,
+        formData: formData,
+        simple: false,
+        resolveWithFullResponse: true
+      })
+
+      return request(options)
     })
-
-    let options = Object.assign(defaultOptions, {
-      method: 'POST',
-      uri: actionUrl,
-      formData: formData,
-      simple: false,
-      resolveWithFullResponse: true
+    .then(response => {
+      // this is a bit strange: if the status code is 302, it means the login was successful. If it's 200, it actually means there was an error. This may change in the future if the form's action is changed.
+      if (response.statusCode !== 302) {
+        throw new Error('LOGIN_FAILED')
+      }
     })
-
-    return request(options)
-  })
-  .then(response => {
-    // this is a bit strange: if the status code is 302, it means the login was successful. If it's 200, it actually means there was an error. This may change in the future if the form's action is changed.
-    if (response.statusCode !== 302) {
-      throw new Error('LOGIN_FAILED')
-    }
-  })
 }
 
-function releves (requiredFields) {
+function releves(requiredFields) {
   let url = 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-releves'
 
   let options = Object.assign(defaultOptions, {
@@ -114,8 +114,7 @@ function releves (requiredFields) {
     resolveWithFullResponse: false
   })
 
-  return request(options)
-  .then(body => {
+  return request(options).then(body => {
     let $ = cheerio.load(body)
     let releveList = new Map()
 
@@ -133,7 +132,7 @@ function releves (requiredFields) {
   })
 }
 
-function paiements (requiredFields) {
+function paiements(requiredFields) {
   let url = 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-remboursements'
 
   let options = Object.assign(defaultOptions, {
@@ -142,48 +141,49 @@ function paiements (requiredFields) {
   })
 
   return request(options)
-  .then(body => {
-    let $ = cheerio.load(body)
-    const $form = $('[name=remboursementForm]')
-    const formvalues = $form.serializeArray().reduce((memo, item) => {
-      memo[item.name] = item.value
-      return memo
-    }, {})
+    .then(body => {
+      let $ = cheerio.load(body)
+      const $form = $('[name=remboursementForm]')
+      const formvalues = $form.serializeArray().reduce((memo, item) => {
+        memo[item.name] = item.value
+        return memo
+      }, {})
 
-    // run a request from one year ago
-    formvalues.dateDebutJour = formvalues.dateFinJour
-    formvalues.dateDebutMois = formvalues.dateFinMois
-    formvalues.dateDebutAnnee = (formvalues.dateFinAnnee - 1) + ''
+      // run a request from one year ago
+      formvalues.dateDebutJour = formvalues.dateFinJour
+      formvalues.dateDebutMois = formvalues.dateFinMois
+      formvalues.dateDebutAnnee = formvalues.dateFinAnnee - 1 + ''
 
-    const url = $form.attr('action')
-    let options = {
-      uri: url,
-      method: 'POST',
-      form: formvalues,
-      headers: {
-        'User-Agent': userAgent,
-        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-      },
-      jar: j
-    }
-    return request(options)
-  })
-  .then(body => {
-    let $ = cheerio.load(body)
-    let paymentList = {}
-
-    $('img.loupe').each((index, elem) => {
-      let onclick = elem.attribs.onclick
-      if (!onclick) return
-      let chunks = onclick.split("'")
-      paymentList[chunks[1]] = chunks[3]
+      const url = $form.attr('action')
+      let options = {
+        uri: url,
+        method: 'POST',
+        form: formvalues,
+        headers: {
+          'User-Agent': userAgent,
+          Accept:
+            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+        },
+        jar: j
+      }
+      return request(options)
     })
+    .then(body => {
+      let $ = cheerio.load(body)
+      let paymentList = {}
 
-    this.payments = paymentList
-  })
+      $('img.loupe').each((index, elem) => {
+        let onclick = elem.attribs.onclick
+        if (!onclick) return
+        let chunks = onclick.split("'")
+        paymentList[chunks[1]] = chunks[3]
+      })
+
+      this.payments = paymentList
+    })
 }
 
-function reimbursements (requiredFields) {
+function reimbursements(requiredFields) {
   let url = 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-remboursements'
   let promises = []
 
@@ -210,8 +210,7 @@ function reimbursements (requiredFields) {
     promises.push(request(options))
   }
 
-  return Promise.all(promises)
-  .then(documents => {
+  return Promise.all(promises).then(documents => {
     documents.forEach(document => {
       let doc = JSON.parse(document)
 
@@ -247,7 +246,7 @@ function reimbursements (requiredFields) {
   })
 }
 
-function customSaveBills (requiredFields, entries) {
+function customSaveBills(requiredFields, entries) {
   const bankOptions = {
     identifiers: 'Harmonie',
     minDateDelta: 0.1,
@@ -262,6 +261,8 @@ function customSaveBills (requiredFields, entries) {
   return saveBills(
     this.files,
     this.fields.folderPath,
-    Object.assign({}, bankOptions, filterOptions, fileOptions, { identifiers: ['date']}))
+    Object.assign({}, bankOptions, filterOptions, fileOptions, {
+      identifiers: ['date']
+    })
+  )
 }
-
