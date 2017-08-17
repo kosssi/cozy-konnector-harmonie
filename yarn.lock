@@ -445,7 +445,7 @@ cozy-client-js@^0.3.4:
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/cozy-client-js/-/cozy-client-js-0.3.9.tgz#21899559008bcf671ee132c079532577d2ae1986"
 
-cozy-konnector-libs@^3.0.0-alpha.21:
+cozy-konnector-libs@^3:
   version "3.0.0-alpha.21"
   resolved "https://registry.yarnpkg.com/cozy-konnector-libs/-/cozy-konnector-libs-3.0.0-alpha.21.tgz#cb5285cb7deb3dc4eb2539dd07848a1a46284444"
   dependencies:
