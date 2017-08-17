@@ -7,7 +7,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "cheerio": "^0.22.0",
-    "cozy-konnector-libs": "^2.5.0",
+    "cozy-konnector-libs": "^3.0.0-alpha.21",
     "debug": "^2.6.3",
     "node-polyglot": "^2.2.2",
     "printit": "^0.1.20",
@@ -17,9 +17,8 @@
   "scripts": {
     "start": "node index.js",
     "oauth": "env-cmd ./data/env.js cozy-authenticate manifest.konnector",
-    "predev": "npm run oauth && env-cmd ./data/env.js cozy-init-dev-account ./data/account.txt ./data/env_fields.json",
-    "dev": "env-cmd ./data/env_development.js npm start",
-    "standalone": "env-cmd ./data/env_standalone.js npm start",
+    "dev": "cozy-konnector-edv",
+    "standalone": "cozy-konnector-standalone",
     "build": "webpack",
     "lint": "standard --fix konnector.js",
     "deploy:travis": "git-directory-deploy --username Cozy --email contact@cozycloud.cc --directory build/ --repo=https://$GITHUB_TOKEN@github.com/cozy/cozy-konnector-harmonie.git",
