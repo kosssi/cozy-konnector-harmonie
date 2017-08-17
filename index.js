@@ -1,5 +1,5 @@
 const { BaseKonnector, saveBills } = require('cozy-konnector-libs')
-let request = require('request-promise-native')
+const request = require('request-promise-native')
 const moment = require('moment')
 const cheerio = require('cheerio')
 
@@ -56,13 +56,6 @@ module.exports = new Konnector(function fetch(fields) {
 })
 
 const j = request.jar()
-
-const fileOptions = {
-  vendor: 'Harmonie',
-  requestOptions: {
-    jar: j
-  }
-}
 
 const baseUrl = 'https://www.harmonie-mutuelle.fr/'
 const userAgent =
@@ -240,6 +233,10 @@ function reimbursements(requiredFields) {
             bill.fileurl = url
             // we prefer to use the date of the releve in the file name and not the bill date
             bill.uniqueId = moment(dateReleve).format('YYYYMMDD')
+            bill.filename = `${bill.uniqueId}.pdf`
+            bill.requestOptions = {
+              jar: j
+            }
           }
         }
 
@@ -270,7 +267,7 @@ function customSaveBills(requiredFields, entries) {
   return saveBills(
     this.files,
     this.fields.folderPath,
-    Object.assign({}, bankOptions, filterOptions, fileOptions, {
+    Object.assign({}, bankOptions, filterOptions, {
       identifiers: ['date']
     })
   )
