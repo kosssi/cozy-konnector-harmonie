@@ -14,6 +14,12 @@ const reducePromises = function(promises, that /* , args... */) {
   }, null)
 }
 
+const parseAmount = function(amount) {
+  return parseFloat(
+    amount.replace('&nbsp;', '').replace('&euro;', '').replace(',', '.')
+  )
+}
+
 class Konnector extends BaseKonnector {
   constructor(fetch, options) {
     super(fetch, options)
@@ -219,8 +225,11 @@ function reimbursements(requiredFields) {
           type: 'health_costs',
           subtype: reimbursement.labelActe,
           vendor: 'Harmonie',
-          amount: parseFloat(reimbursement.montantRC),
-          date: moment(new Date(reimbursement.dateSoin.split('/').reverse().join('/'))),
+          originalAmount: parseAmount(reimbursement.honoraires),
+          amount: parseAmount(reimbursement.montantRC),
+          date: moment(
+            new Date(reimbursement.dateSoin.split('/').reverse().join('/'))
+          ),
           isRefund: true
         }
 
