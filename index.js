@@ -224,11 +224,8 @@ function reimbursements(requiredFields) {
             new Date(reimbursement.dateSoin.split('/').reverse().join('/'))
           ),
           isRefund: true,
-          extra: {
-            beneficiary: `${reimbursement.nom} ${reimbursement.prenom}`,
-            socialSecurityRefund: parseAmount(reimbursement.montantRO)
-          }
-
+          beneficiary: `${reimbursement.nom} ${reimbursement.prenom}`,
+          socialSecurityRefund: parseAmount(reimbursement.montantRO)
         }
 
         // find the corresponding pdf file
