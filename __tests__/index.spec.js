@@ -48,7 +48,10 @@ test('releves', function () {
 
 test('paiements', function () {
   return fetchPaiements.bind(data)().then(function () {
-    expect(data.payments[0]).toBe('145985794')
+    expect(data.payments[0]).toEqual({
+      id: '145985794',
+      paymentDate: '16/08/2017'
+    })
   })
 })
 
@@ -73,7 +76,7 @@ test('repayments', function () {
       filename: 'Facture 2017/07/31 Jul 2017.pdf'
     })
 
-    expect(bill.originalDate).toEqualMoment("2017-07-05")
+    expect(bill.originalDate).toEqualMoment("2017-08-16")
     expect(bill.date).toEqualMoment("2017-07-05")
   })
 })
