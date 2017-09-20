@@ -1,4 +1,4 @@
-const request = require('request-promise-native')
+const request = require('request-promise')
 const cheerio = require('cheerio')
 const moment = require('moment')
 const { saveBills } = require('cozy-konnector-libs')

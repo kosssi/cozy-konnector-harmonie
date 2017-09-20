@@ -1,0 +1,23 @@
+POST /web/tout-harmonie/mutuelle-sante-harmonie-mutuelle?p_auth=RR9P2uD1&p_p_id=58&p_p_lifecycle=1&p_p_state=normal&p_p_mode=view&saveLastPath=0&_58_struts_action=%2Flogin%2Flogin&_58_doActionAfterLogin=false
+accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+host: www.harmonie-mutuelle.fr
+
+HTTP/1.1 302 Moved Temporarily
+date: Wed, 20 Sep 2017 14:50:05 GMT
+set-cookie: COMPANY_ID=10153; domain=.harmonie-mutuelle.fr; path=/
+set-cookie: ID=694d7732646667704f7a453d; domain=.harmonie-mutuelle.fr; path=/
+set-cookie: USER_UUID=9EPL5HruuDSdPPMs8oNqQTydr7sreWQi; path=/
+cache-control: no-cache="Set-Cookie"
+x-cnection: close
+location: https://www.harmonie-mutuelle.fr/c
+content-type: text/html; charset=UTF-8
+x-dynatrace-js-agent: true
+vary: Accept-Encoding
+connection: close
+transfer-encoding: chunked
+
+<html><head><title>302 Moved Temporarily</title></head>
+<body bgcolor="#FFFFFF">
+<p>This document you requested has moved temporarily.</p>
+<p>It's now at <a href="https://www.harmonie-mutuelle.fr/c">https://www.harmonie-mutuelle.fr/c</a>.</p>
+</body></html>

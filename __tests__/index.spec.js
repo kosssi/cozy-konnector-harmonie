@@ -2,7 +2,7 @@
 const replay = require('replay')
 
 // Cannot get replay to work in replay mode :/
-replay.mode = 'record'
+// replay.mode = 'record'
 replay.fixtures = __dirname + '/fixtures'
 
 const libs = require('../lib')
@@ -41,16 +41,16 @@ test('releves', function () {
   return fetchReleves.bind(data)(fields).then(function (response) {
     const releves = Array.from(data.releves)
     expect(releves.length).toBe(10)
-    expect(releves[0][0]).toEqual(new Date('2017-07-30T22:00:00.000Z'))
-    expect(releves[0][1]).toBe('https://www.harmonie-mutuelle.fr/web/mon-compte/mes-releves?p_p_id=decomptes_WAR_MHMportlet&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_resource_id=decompteFile201707&p_p_cacheability=cacheLevelPage&p_p_col_id=column-4&p_p_col_pos=1&p_p_col_count=3&_decomptes_WAR_MHMportlet_fileChoice=SrcSyst_9%2F02832334%2F02832334_22057529_HAUP00_PS001_ADH____PSREIA01_10000500_20170731_P_________BA_PCGSALARI_DM_QUO-RAS____00000_PCSM3031D.pdf')
+    expect(releves[0][0]).toEqual(new Date('2017-09-17T22:00:00.000Z'))
+    expect(releves[0][1]).toBe('https://www.harmonie-mutuelle.fr/web/mon-compte/mes-releves?p_p_id=decomptes_WAR_MHMportlet&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_resource_id=decompteFile201709&p_p_cacheability=cacheLevelPage&p_p_col_id=column-4&p_p_col_pos=1&p_p_col_count=3&_decomptes_WAR_MHMportlet_fileChoice=SrcSyst_9%2F02832334%2F02832334_22057529_HAUP00_PS001_ADH____PSREIA01_10000400_20170918_P_________BA_PCGSALARI_DM_QUO-RAS____00000_PCSM3031D.pdf')
   })
 })
 
 test('paiements', function () {
   return fetchPaiements.bind(data)().then(function () {
     expect(data.payments[0]).toEqual({
-      id: '145985794',
-      paymentDate: '16/08/2017'
+      'id': '147828884',
+      'paymentDate': '11/09/2017'
     })
   })
 })
@@ -64,19 +64,19 @@ test('repayments', function () {
     const bill = results[0]
     expect(bill).toMatchObject({
       type: 'health_costs',
-      subtype: 'Actes techniques médicaux',
+      subtype: 'Consultation dentaire',
       vendor: 'Harmonie',
-      originalAmount: 15.4,
-      amount: 4.62,
+      originalAmount: 23,
+      amount: 6.9,
       isRefund: true,
-      beneficiary: 'RICHARD MELODY',
-      socialSecurityRefund: 10.78,
-      fileurl: 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-releves?p_p_id=decomptes_WAR_MHMportlet&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_resource_id=decompteFile201707&p_p_cacheability=cacheLevelPage&p_p_col_id=column-4&p_p_col_pos=1&p_p_col_count=3&_decomptes_WAR_MHMportlet_fileChoice=SrcSyst_9%2F02832334%2F02832334_22057529_HAUP00_PS001_ADH____PSREIA01_10000500_20170731_P_________BA_PCGSALARI_DM_QUO-RAS____00000_PCSM3031D.pdf',
-      uniqueId: 'Facture 2017/07/31 Jul 2017',
-      filename: 'Facture 2017/07/31 Jul 2017.pdf'
+      beneficiary: 'name girl',
+      socialSecurityRefund: 16.1,
+      fileurl: 'https://www.harmonie-mutuelle.fr/web/mon-compte/mes-releves?p_p_id=decomptes_WAR_MHMportlet&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_resource_id=decompteFile201709&p_p_cacheability=cacheLevelPage&p_p_col_id=column-4&p_p_col_pos=1&p_p_col_count=3&_decomptes_WAR_MHMportlet_fileChoice=SrcSyst_9%2F02832334%2F02832334_22057529_HAUP00_PS001_ADH____PSREIA01_10000400_20170918_P_________BA_PCGSALARI_DM_QUO-RAS____00000_PCSM3031D.pdf',
+      uniqueId: 'Facture 2017/09/18 Sep 2017',
+      filename: 'Facture 2017/09/18 Sep 2017.pdf'
     })
 
-    expect(bill.originalDate).toEqualMoment("2017-08-16")
-    expect(bill.date).toEqualMoment("2017-07-05")
+    expect(bill.originalDate).toEqualMoment("2017-09-11")
+    expect(bill.date).toEqualMoment("2017-09-06")
   })
 })

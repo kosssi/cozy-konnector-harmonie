@@ -1,0 +1,16 @@
+POST /web/mon-compte/mes-remboursements?p_p_id=mhmRemboursement_WAR_mhmportalapplication&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_cacheability=cacheLevelPage&p_p_col_id=column-2&p_p_col_pos=1&p_p_col_count=3&_mhmRemboursement_WAR_mhmportalapplication_action=detailPaiement&counter=2&numPaiement=145985794
+accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+host: www.harmonie-mutuelle.fr
+
+HTTP/1.1 200 OK
+date: Wed, 20 Sep 2017 14:50:09 GMT
+cache-control: private, no-cache, no-store, must-revalidate
+pragma: no-cache
+content-length: 259
+content-type: application/json
+expires: Thu, 01 Jan 1970 00:00:00 GMT
+etag: "6861869:dtagent600050024100696aE"
+x-dynatrace-js-agent: true
+connection: close
+
+{"decompteList":[{"montantRO":"10,78&nbsp;&euro;","prenom":"girl","honoraires":"15,40&nbsp;&euro;","montantRC":"4,62&nbsp;&euro;","labelActe":"Actes techniques médicaux","nom":"name","dateSoin":"05/07/2017"}],"countRow":"2","numeroPaiement":"145985794"}

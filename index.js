@@ -1,5 +1,5 @@
 const { BaseKonnector } = require('cozy-konnector-libs')
-const request = require('request-promise-native')
+const request = require('request-promise')
 const moment = require('moment')
 const cheerio = require('cheerio')
 const { login, releves, paiements, repayments, customSaveBills } = require('./lib')

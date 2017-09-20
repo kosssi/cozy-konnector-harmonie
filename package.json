@@ -8,12 +8,11 @@
   "dependencies": {
     "cheerio": "^0.22.0",
     "cozy-konnector-libs": "^3.0.0-alpha.26",
-    "debug": "^2.6.3",
-    "jest": "^20.0.4",
+    "jest": "^21.1.0",
     "node-polyglot": "^2.2.2",
     "printit": "^0.1.20",
     "request": "^2.81.0",
-    "request-promise-native": "^1.0.3"
+    "request-promise": "^4.2.1"
   },
   "scripts": {
     "start": "node index.js",
