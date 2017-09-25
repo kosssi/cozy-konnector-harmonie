@@ -66,7 +66,7 @@ The bills (or any file) will be saved in the ./data directory.
 
 ### Maintainer
 
-The lead maintainers for this konnector is @y-lohse
+The lead maintainers for this konnector is @ptbrowne.
 
 
 ### Get in touch
