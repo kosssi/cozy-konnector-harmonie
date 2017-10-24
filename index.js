@@ -36,16 +36,15 @@ class Konnector extends BaseKonnector {
     return reducePromises(this.exporters, this, this.fields)
   }
 
-  run() {
+  fetch(fields) {
+    this.fields = fields
+    this.fetchers = [login, releves, paiements, repayments]
+    this.exporters = [customSaveBills]
     return this.runFetchers().then(() => this.runExporters()).catch(err => {
       console.log(err.stack)
     })
   }
 }
 
-module.exports = new Konnector(function fetch(fields) {
-  this.fields = fields
-  this.fetchers = [login, releves, paiements, repayments]
-  this.exporters = [customSaveBills]
-  return this.run()
-})
+const konn = new Konnector()
+konn.run()
