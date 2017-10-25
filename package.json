@@ -7,7 +7,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "cheerio": "^0.22.0",
-    "cozy-konnector-libs": "^3.0.2",
+    "cozy-konnector-libs": "^3.0.7",
     "jest": "^21.1.0",
     "node-polyglot": "^2.2.2",
     "printit": "^0.1.20",
