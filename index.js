@@ -118741,7 +118741,7 @@ const login = module.exports.login = function (requiredFields) {
     .then(response => {
       // this is a bit strange: if the status code is 302, it means the login was successful. If it's 200, it actually means there was an error. This may change in the future if the form's action is changed.
       if (response.statusCode !== 302) {
-        throw new Error('LOGIN_FAILED')
+        this.terminate('LOGIN_FAILED')
       }
     })
 }
