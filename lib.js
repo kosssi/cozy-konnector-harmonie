@@ -76,6 +76,8 @@ const releves = module.exports.releves = function (requiredFields) {
       releveList.set(date, link)
     })
 
+    throw new Error('TEST')
+
     this.releves = releveList
   })
 }
