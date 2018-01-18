@@ -6,13 +6,13 @@
   "author": "",
   "license": "AGPL-3.0",
   "dependencies": {
-    "cheerio": "^0.22.0",
-    "cozy-konnector-libs": "^3.0.7",
-    "jest": "^21.1.0",
-    "node-polyglot": "^2.2.2",
-    "printit": "^0.1.20",
-    "request": "^2.81.0",
-    "request-promise": "^4.2.1"
+    "cheerio": "0.22.0",
+    "cozy-konnector-libs": "3.2.1",
+    "jest": "21.2.1",
+    "node-polyglot": "2.2.2",
+    "printit": "0.1.20",
+    "request": "2.83.0",
+    "request-promise": "4.2.2"
   },
   "scripts": {
     "start": "node index.js",
@@ -25,9 +25,9 @@
     "deploy": "git-directory-deploy --directory build/ --branch build"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^4.0.1",
-    "git-directory-deploy": "^1.5.1",
-    "request-debug": "^0.2.0",
-    "webpack": "^3.4.1"
+    "copy-webpack-plugin": "4.3.1",
+    "git-directory-deploy": "1.5.1",
+    "request-debug": "0.2.0",
+    "webpack": "3.10.0"
   }
 }
