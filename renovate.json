@@ -5,7 +5,7 @@
       "minor": {
         "automerge": false
       },
-      "patch": {
+      "major": {
         "automerge": false
       },
       "packagePatterns": [
