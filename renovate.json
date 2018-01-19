@@ -1,7 +1,4 @@
 {
-  "extends": [
-    "config:base"
-  ],
   "npm": {
     "packageRules": [
       {
@@ -13,5 +10,18 @@
         }
       }
     ]
-  }
+  },
+  "extends": [
+    "config:base"
+  ],
+  "packageRules": [
+    {
+      "packagePatterns": [
+        "^cozy-konnector-libs"
+      ],
+      "patch": {
+        "automerge": true
+      }
+    }
+  ]
 }
