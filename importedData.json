@@ -1,0 +1,19 @@
+[
+  {
+    "type": "health_costs",
+    "subtype": "Accessoires et appareillages",
+    "vendor": "Harmonie",
+    "originalAmount": 73.5,
+    "amount": 5.77,
+    "originalDate": "2017-12-28T23:00:00.000Z",
+    "date": "2017-06-05T22:00:00.000Z",
+    "isRefund": true,
+    "beneficiary": "user1",
+    "socialSecurityRefund": 8.66,
+    "fileurl": "XXXXXX",
+    "uniqueId": "Facture 2017/06/12 Jun 2017",
+    "filename": "Facture 2017/06/12 Jun 2017.pdf",
+    "invoice": "io.cozy.files:a1e2e2e1024c5b898e8d7581d57014cf",
+    "_id": "a1e2e2e1024c5b898e8d7581d57002cf"
+  }
+]
