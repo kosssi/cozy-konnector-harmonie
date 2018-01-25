@@ -6,13 +6,35 @@ What's Cozy?
 
 ![Cozy Logo](https://cdn.rawgit.com/cozy/cozy-guidelines/master/templates/cozy_logo_small.svg)
 
-[Cozy] is a platform that brings all your web services in the same private space.  With it, your webapps and your devices can share data easily, providing you with a new experience. You can install Cozy on your own hardware where no one's tracking you.
+[Cozy] is a platform that brings all your web services in the same private space. With it, your webapps and your devices can share data easily, providing you with a new experience. You can install Cozy on your own hardware where no one's tracking you.
 
-
-What's this new konnector?
+What's this konnector?
 --------------------------
 
 This konnector fetches the list of reimbursements from [Harmonie Mutuelle][harmonie].
+
+What data is imported ?
+-----------------------
+
+This konnector imports the list of reimbursements metadata that you can see in the "Mes remboursements" page.
+It uses the detailed view for each line.
+
+For each reimbursement, an associated PDF bill is downloaded (many reimbursements can have the
+same associated file and the file is only downloaded once.
+
+Each health care treatment has its own document in io.cozy.bills to allow the linking with the original debit operation.
+But Harmonie can reimburse multiple health care treatments at once sometimes. And, for now, there is
+no matching of credit operation in this case.
+
+An example of imported data can be seen in [./importedData.json](./importedData.json)
+
+Take a look at the [documentation](https://github.com/cozy/cozy-doctypes/blob/master/docs/io.cozy.bills.md)
+to have the signification of the fields in this file.
+
+### TODO
+
+- [ ] Merge multiple bills with the same id of reimbursement and sum originalAmount of each
+bill to get the real originalAmount of the related credit operation
 
 ### Open a Pull-Request
 
